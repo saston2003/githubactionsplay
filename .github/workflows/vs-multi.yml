@@ -1,0 +1,28 @@
+name: Multi-Repo .NET Version Sweeper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  version-sweeper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Read repositories list
+        id: read-repos
+        run: |
+          repos=$(cat repositories.txt)
+          echo "::set-output name=repos::$repos"
+
+      - name: Run sweeper on each repository
+        run: |
+          repos="${{ steps.read-repos.outputs.repos }}"
+          for repo in $repos; do
+            echo "Running sweeper on $repo"
+            gh workflow run vs.yml --repo $repo
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
