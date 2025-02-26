@@ -1,0 +1,18 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+pool:
+  vmImage: 'windows-latest'
+variables:
+  - group: 'nuget-deployment-vars'
+steps:
+  - powershell: |
+      "var1:$(nugetapikey) var2:$(progetapikey)" | Out-File $(System.DefaultWorkingDirectory)\output.txt
+    displayName: 'Output Secret Variable'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)\output.txt'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
